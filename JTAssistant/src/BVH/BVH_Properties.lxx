@@ -1,0 +1,192 @@
+// JT format reading and visualization tools
+// Copyright (C) 2013-2015 OPEN CASCADE SAS
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, version 2 of the License, or any later
+// version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+// 
+// Copy of the GNU General Public License is in LICENSE.txt and  
+// on <http://www.gnu.org/licenses/>.
+
+template<class T, int N>
+BVH_Transform<T, N>::BVH_Transform()
+{
+  //
+}
+
+// =======================================================================
+// function : BVH_Transform
+// purpose  :
+// =======================================================================
+template<class T, int N>
+BVH_Transform<T, N>::BVH_Transform (const BVH_MatNt& theTransform)
+: myTransform (theTransform)
+{
+  //
+}
+
+// =======================================================================
+// function : ~BVH_Transform
+// purpose  :
+// =======================================================================
+template<class T, int N>
+BVH_Transform<T, N>::~BVH_Transform()
+{
+  //
+}
+
+// =======================================================================
+// function : Transform
+// purpose  :
+// =======================================================================
+template<class T, int N>
+const typename BVH_Transform<T, N>::BVH_MatNt& BVH_Transform<T, N>::Transform() const
+{
+  return myTransform;
+}
+
+// =======================================================================
+// function : SetTransform
+// purpose  :
+// =======================================================================
+template<class T, int N>
+void BVH_Transform<T, N>::SetTransform (const BVH_MatNt& theTransform)
+{
+  myTransform = theTransform;
+  BVH::MatrixOp<T, N>::Inverse (myTransform, myTransformInversed);
+}
+
+// =======================================================================
+// function : Inversed
+// purpose  :
+// =======================================================================
+template<class T, int N>
+const typename BVH_Transform<T, N>::BVH_MatNt& BVH_Transform<T, N>::Inversed() const
+{
+  return myTransformInversed;
+}
+
+namespace BVH
+{
+  template<class T, int N>
+  struct UnitVector
+  {
+    // Not implemented
+  };
+
+  template<class T>
+  struct UnitVector<T, 2>
+  {
+    typedef typename BVH::VectorType<T, 2>::Type BVH_Vec2t;
+
+    static BVH_Vec2t DX()
+    {
+      return BVH_Vec2t (static_cast<T> (1.0),
+                        static_cast<T> (0.0));
+    }
+
+    static BVH_Vec2t DY()
+    {
+      return BVH_Vec2t (static_cast<T> (0.0),
+                        static_cast<T> (1.0));
+    }
+
+    static BVH_Vec2t DZ()
+    {
+      return BVH_Vec2t (static_cast<T> (0.0),
+                        static_cast<T> (0.0));
+    }
+  };
+
+  template<class T>
+  struct UnitVector<T, 3>
+  {
+    typedef typename BVH::VectorType<T, 3>::Type BVH_Vec3t;
+
+    static BVH_Vec3t DX()
+    {
+      return BVH_Vec3t (static_cast<T> (1.0),
+                        static_cast<T> (0.0),
+                        static_cast<T> (0.0));
+    }
+
+    static BVH_Vec3t DY()
+    {
+      return BVH_Vec3t (static_cast<T> (0.0),
+                        static_cast<T> (1.0),
+                        static_cast<T> (0.0));
+    }
+
+    static BVH_Vec3t DZ()
+    {
+      return BVH_Vec3t (static_cast<T> (0.0),
+                        static_cast<T> (0.0),
+                        static_cast<T> (1.0));
+    }
+  };
+
+  template<class T>
+  struct UnitVector<T, 4>
+  {
+    typedef typename BVH::VectorType<T, 4>::Type BVH_Vec4t;
+
+    static BVH_Vec4t DX()
+    {
+      return BVH_Vec4t (static_cast<T> (1.0),
+                        static_cast<T> (0.0),
+                        static_cast<T> (0.0),
+                        static_cast<T> (0.0));
+    }
+
+    static BVH_Vec4t DY()
+    {
+      return BVH_Vec4t (static_cast<T> (0.0),
+                        static_cast<T> (1.0),
+                        static_cast<T> (0.0),
+                        static_cast<T> (0.0));
+    }
+
+    static BVH_Vec4t DZ()
+    {
+      return BVH_Vec4t (static_cast<T> (0.0),
+                        static_cast<T> (0.0),
+                        static_cast<T> (1.0),
+                        static_cast<T> (0.0));
+    }
+  };
+}
+
+// =======================================================================
+// function : Apply
+// purpose  :
+// =======================================================================
+template<class T, int N>
+BVH_Box<T, N> BVH_Transform<T, N>::Apply (const BVH_Box<T, N>& theBox) const
+{
+  typename BVH_Box<T, N>::BVH_VecNt aSize = theBox.Size();
+
+  BVH_Box<T, N> aBox;
+  for (Standard_Integer aX = 0; aX <= 1; ++aX)
+  {
+    for (Standard_Integer aY = 0; aY <= 1; ++aY)
+    {
+      for (Standard_Integer aZ = 0; aZ <= 1; ++aZ)
+      {
+        typename BVH_Box<T, N>::BVH_VecNt aCorner = theBox.CornerMin() +
+          BVH::UnitVector<T, N>::DX().cwiseProduct (aSize) * static_cast<T> (aX) +
+          BVH::UnitVector<T, N>::DY().cwiseProduct (aSize) * static_cast<T> (aY) +
+          BVH::UnitVector<T, N>::DZ().cwiseProduct (aSize) * static_cast<T> (aZ);
+
+        aBox.Add (BVH::MatrixOp<T, N>::Multiply (myTransform, aCorner));
+      }
+    }
+  }
+
+  return aBox;
+}

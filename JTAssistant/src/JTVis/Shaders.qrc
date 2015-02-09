@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Shaders/default.frag</file>
+        <file>Shaders/default.vert</file>
+        <file>Shaders/lineShader.frag</file>
+        <file>Shaders/lineShader.vert</file>
+        <file>Shaders/bgShader.frag</file>
+        <file>Shaders/bgShader.vert</file>
+        <file>Shaders/idShader.frag</file>
+        <file>Shaders/idShader.vert</file>
+        <file>Shaders/trihedronShader.vert</file>
+        <file>Shaders/trihedronShader.frag</file>
+        <file>Shaders/texQuadShader.frag</file>
+        <file>Shaders/texQuadShader.vert</file>
+    </qresource>
+</RCC>

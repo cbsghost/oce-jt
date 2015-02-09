@@ -1,0 +1,107 @@
+// JT format reading and visualization tools
+// Copyright (C) 2013-2015 OPEN CASCADE SAS
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, version 2 of the License, or any later
+// version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+// 
+// Copy of the GNU General Public License is in LICENSE.txt and  
+// on <http://www.gnu.org/licenses/>.
+
+#include <BVH_BinnedBuilder.hxx>
+
+// =======================================================================
+// function : BVH_PrimitiveSet
+// purpose  :
+// =======================================================================
+template<class T, int N>
+BVH_PrimitiveSet<T, N>::BVH_PrimitiveSet()
+: myBVH (new BVH_Tree<T, N>())
+{
+  // Set default builder - binned SAH split
+  myBuilder = new BVH_BinnedBuilder<T, N, 48> (5, 32);
+}
+
+// =======================================================================
+// function : ~BVH_PrimitiveSet
+// purpose  :
+// =======================================================================
+template<class T, int N>
+BVH_PrimitiveSet<T, N>::~BVH_PrimitiveSet()
+{
+  myBVH.Nullify();
+  myBuilder.Nullify();
+}
+
+// =======================================================================
+// function : BVH
+// purpose  :
+// =======================================================================
+template<class T, int N>
+const NCollection_Handle<BVH_Tree<T, N> >& BVH_PrimitiveSet<T, N>::BVH()
+{
+  if (BVH_Object<T, N>::myIsDirty)
+  {
+    Update();
+  }
+
+  return myBVH;
+}
+
+// =======================================================================
+// function : Box
+// purpose  :
+// =======================================================================
+template<class T, int N>
+BVH_Box<T, N> BVH_PrimitiveSet<T, N>::Box() const
+{
+  if (!BVH_Object<T, N>::myIsDirty)
+  {
+    return myBox;
+  }
+
+  myBox = BVH_Set<T, N>::Box();
+  return myBox;
+}
+
+// =======================================================================
+// function : Update
+// purpose  :
+// =======================================================================
+template<class T, int N>
+void BVH_PrimitiveSet<T, N>::Update()
+{
+  if (!BVH_Object<T, N>::myIsDirty)
+  {
+    return;
+  }
+
+  myBuilder->Build (this, myBVH.operator->(), Box());
+  BVH_Object<T, N>::myIsDirty = Standard_False;
+}
+
+// =======================================================================
+// function : Builder
+// purpose  :
+// =======================================================================
+template<class T, int N>
+const NCollection_Handle<BVH_Builder<T, N> >& BVH_PrimitiveSet<T, N>::Builder() const
+{
+  return myBuilder;
+}
+
+// =======================================================================
+// function : SetBuilder
+// purpose  :
+// =======================================================================
+template<class T, int N>
+void BVH_PrimitiveSet<T, N>::SetBuilder (NCollection_Handle<BVH_Builder<T, N> >& theBuilder)
+{
+  myBuilder = theBuilder;
+}

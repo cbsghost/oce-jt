@@ -1,0 +1,81 @@
+// JT format reading and visualization tools
+// Copyright (C) 2013-2015 OPEN CASCADE SAS
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, version 2 of the License, or any later
+// version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+// 
+// Copy of the GNU General Public License is in LICENSE.txt and  
+// on <http://www.gnu.org/licenses/>.
+
+template<class T, int N>
+BVH_QueueBuilder<T, N>::BVH_QueueBuilder (const Standard_Integer theLeafNodeSize,
+                                          const Standard_Integer theMaxTreeDepth)
+: BVH_Builder<T, N> (theLeafNodeSize,
+                     theMaxTreeDepth)
+{
+  //
+}
+
+// =======================================================================
+// function : ~BVH_QueueBuilder
+// purpose  : Releases resources of BVH queue based builder
+// =======================================================================
+template<class T, int N>
+BVH_QueueBuilder<T, N>::~BVH_QueueBuilder()
+{
+  //
+}
+
+// =======================================================================
+// function : Build
+// purpose  : Builds BVH using specific algorithm
+// =======================================================================
+template<class T, int N>
+void BVH_QueueBuilder<T, N>::Build (BVH_Set<T, N>*       theSet,
+                                    BVH_Tree<T, N>*      theBVH,
+                                    const BVH_Box<T, N>& theBox)
+{
+  if (theBVH == NULL)
+  {
+    return;
+  }
+
+  theBVH->Clear();
+  if (theSet->Size() == 0)
+  {
+    return;
+  }
+
+  const Standard_Integer aRoot = theBVH->AddLeafNode (theBox, 0, theSet->Size() - 1);
+  if (theSet->Size() == 1)
+  {
+    return;
+  }
+
+  myTasksQueue.Append (aRoot);
+  for (Standard_Integer aTask = 0; aTask < myTasksQueue.Size(); ++aTask)
+  {
+    BuildNode (theSet, theBVH, myTasksQueue.Value (aTask));
+  }
+
+  myTasksQueue.Clear();
+}
+
+// =======================================================================
+// function : BuildNode
+// purpose  : Builds BVH node for the given task info
+// =======================================================================
+template<class T, int N>
+void BVH_QueueBuilder<T, N>::BuildNode (BVH_Set<T, N>*         /* theSet */,
+                                        BVH_Tree<T, N>*        /* theBVH */,
+                                        const Standard_Integer /* theTask */)
+{
+  // needed to disable compile warnings
+}

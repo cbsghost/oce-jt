@@ -1,0 +1,46 @@
+// JT format reading and visualization tools
+// Copyright (C) 2013-2015 OPEN CASCADE SAS
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, version 2 of the License, or any later
+// version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+// 
+// Copy of the GNU General Public License is in LICENSE.txt and  
+// on <http://www.gnu.org/licenses/>.
+
+template<class T, int N>
+BVH_Set<T, N>::BVH_Set()
+{
+  //
+}
+
+// =======================================================================
+// function : ~BVH_Set
+// purpose  :
+// =======================================================================
+template<class T, int N>
+BVH_Set<T, N>::~BVH_Set()
+{
+  //
+}
+
+// =======================================================================
+// function : Box
+// purpose  :
+// =======================================================================
+template<class T, int N>
+BVH_Box<T, N> BVH_Set<T, N>::Box() const
+{
+  BVH_Box<T, N> aBox;
+  for (Standard_Integer anIndex = 0; anIndex < Size(); ++anIndex)
+  {
+    aBox.Combine (Box (anIndex));
+  }
+  return aBox;
+}

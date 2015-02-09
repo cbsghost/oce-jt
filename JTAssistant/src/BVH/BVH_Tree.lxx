@@ -1,0 +1,166 @@
+// JT format reading and visualization tools
+// Copyright (C) 2013-2015 OPEN CASCADE SAS
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, version 2 of the License, or any later
+// version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+// 
+// Copy of the GNU General Public License is in LICENSE.txt and  
+// on <http://www.gnu.org/licenses/>.
+
+template<class T, int N>
+void BVH_Tree<T, N>::Clear()
+{
+  myDepth = 0;
+
+  BVH::Array<T, N>::Clear (myMinPointBuffer);
+  BVH::Array<T, N>::Clear (myMaxPointBuffer);
+
+  BVH::Array<Standard_Integer, 4>::Clear (myNodeInfoBuffer);
+}
+
+// =======================================================================
+// function : AddLeafNode
+// purpose  :
+// =======================================================================
+template<class T, int N>
+Standard_Integer BVH_Tree<T, N>::AddLeafNode (const Standard_Integer theBegElem,
+                                              const Standard_Integer theEndElem)
+{
+  BVH::Array<Standard_Integer, 4>::Append (myNodeInfoBuffer, BVH_Vec4i (1, theBegElem, theEndElem, 0));
+
+  return static_cast<Standard_Integer> (BVH::Array<Standard_Integer, 4>::Size (myNodeInfoBuffer) - 1);
+}
+
+// =======================================================================
+// function : AddInnerNode
+// purpose  :
+// =======================================================================
+template<class T, int N>
+Standard_Integer BVH_Tree<T, N>::AddInnerNode (const Standard_Integer theLftChild,
+                                               const Standard_Integer theRghChild)
+{
+  BVH::Array<Standard_Integer, 4>::Append (myNodeInfoBuffer, BVH_Vec4i (0, theLftChild, theRghChild, 0));
+
+  return static_cast<Standard_Integer> (BVH::Array<Standard_Integer, 4>::Size (myNodeInfoBuffer)  - 1);
+}
+
+// =======================================================================
+// function : AddLeafNode
+// purpose  :
+// =======================================================================
+template<class T, int N>
+Standard_Integer BVH_Tree<T, N>::AddLeafNode (const BVH_VecNt&       theMinPoint,
+                                              const BVH_VecNt&       theMaxPoint,
+                                              const Standard_Integer theBegElem,
+                                              const Standard_Integer theEndElem)
+{
+  BVH::Array<T, N>::Append (myMinPointBuffer, theMinPoint);
+  BVH::Array<T, N>::Append (myMaxPointBuffer, theMaxPoint);
+
+  BVH::Array<Standard_Integer, 4>::Append (myNodeInfoBuffer, BVH_Vec4i (1, theBegElem, theEndElem, 0));
+
+  return static_cast<Standard_Integer> (BVH::Array<Standard_Integer, 4>::Size (myNodeInfoBuffer) - 1);
+}
+
+// =======================================================================
+// function : AddInnerNode
+// purpose  :
+// =======================================================================
+template<class T, int N>
+Standard_Integer BVH_Tree<T, N>::AddInnerNode (const BVH_VecNt&       theMinPoint,
+                                               const BVH_VecNt&       theMaxPoint,
+                                               const Standard_Integer theLftChild,
+                                               const Standard_Integer theRghChild)
+{
+  BVH::Array<T, N>::Append (myMinPointBuffer, theMinPoint);
+  BVH::Array<T, N>::Append (myMaxPointBuffer, theMaxPoint);
+
+  BVH::Array<Standard_Integer, 4>::Append (myNodeInfoBuffer, BVH_Vec4i (0, theLftChild, theRghChild, 0));
+
+  return static_cast<Standard_Integer> (BVH::Array<Standard_Integer, 4>::Size (myNodeInfoBuffer)  - 1);
+}
+
+// =======================================================================
+// function : AddLeafNode
+// purpose  :
+// =======================================================================
+template<class T, int N>
+Standard_Integer BVH_Tree<T, N>::AddLeafNode (const BVH_Box<T, N>&   theAABB,
+                                              const Standard_Integer theBegElem,
+                                              const Standard_Integer theEndElem)
+{
+  return AddLeafNode (theAABB.CornerMin(), theAABB.CornerMax(), theBegElem, theEndElem);
+}
+
+// =======================================================================
+// function : AddInnerNode
+// purpose  :
+// =======================================================================
+template<class T, int N>
+Standard_Integer BVH_Tree<T, N>::AddInnerNode (const BVH_Box<T, N>&   theAABB,
+                                               const Standard_Integer theLftChild,
+                                               const Standard_Integer theRghChild)
+{
+  return AddInnerNode (theAABB.CornerMin(), theAABB.CornerMax(), theLftChild, theRghChild);
+}
+
+namespace BVH
+{
+  //! Internal function for recursive calculation of
+  //! surface area heuristic (SAH) of the given tree.
+  template<class T, int N>
+  void EstimateSAH (const BVH_Tree<T, N>*  theTree,
+                    const Standard_Integer theNode,
+                    T                      theProb,
+                    T&                     theSAH)
+  {
+    BVH_Box<T, N> aBox (theTree->MinPoint (theNode),
+                        theTree->MaxPoint (theNode));
+
+    if (theTree->IsOuter (theNode))
+    {
+      theSAH += theProb * (theTree->EndPrimitive (theNode) - theTree->BegPrimitive (theNode) + 1);
+    }
+    else
+    {
+      theSAH += theProb * static_cast<T> (2.0);
+
+      BVH_Box<T, N> aLftBox (theTree->MinPoint (theTree->LeftChild (theNode)),
+                             theTree->MaxPoint (theTree->LeftChild (theNode)));
+
+      if (theProb > 0.0)
+      {
+        EstimateSAH (theTree, theTree->LeftChild (theNode),
+                     theProb * aLftBox.Area() / aBox.Area(), theSAH);
+      }
+
+      BVH_Box<T, N> aRghBox (theTree->MinPoint (theTree->RightChild (theNode)),
+                             theTree->MaxPoint (theTree->RightChild (theNode)));
+
+      if (theProb > 0.0)
+      {
+        EstimateSAH (theTree, theTree->RightChild (theNode),
+                     theProb * aRghBox.Area() / aBox.Area(), theSAH);
+      }
+    }
+  }
+}
+
+// =======================================================================
+// function : EstimateSAH
+// purpose  :
+// =======================================================================
+template<class T, int N>
+T BVH_Tree<T, N>::EstimateSAH() const
+{
+  T aSAH = static_cast<T> (0.0);
+  BVH::EstimateSAH (this, 0, static_cast<T> (1.0), aSAH);
+  return aSAH;
+}

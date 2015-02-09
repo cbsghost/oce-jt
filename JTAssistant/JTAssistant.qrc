@@ -1,0 +1,47 @@
+
+<RCC>
+    <qresource prefix="/shaders">
+        <file>src/JTVis/Shaders/bgShader.frag</file>
+        <file>src/JTVis/Shaders/bgShader.vert</file>
+        <file>src/JTVis/Shaders/default.frag</file>
+        <file>src/JTVis/Shaders/default.vert</file>
+        <file>src/JTVis/Shaders/idShader.frag</file>
+        <file>src/JTVis/Shaders/idShader.vert</file>
+        <file>src/JTVis/Shaders/lineShader.frag</file>
+        <file>src/JTVis/Shaders/lineShader.vert</file>
+        <file>src/JTVis/Shaders/texQuadShader.frag</file>
+        <file>src/JTVis/Shaders/texQuadShader.vert</file>
+        <file>src/JTVis/Shaders/trihedronShader.frag</file>
+        <file>src/JTVis/Shaders/trihedronShader.vert</file>
+    </qresource>
+    <qresource prefix="/fonts">
+        <file>res/fonts/OpenSans-Regular.ttf</file>
+    </qresource>
+    <qresource prefix="/desktop">
+        <file>res/icons/desktop/Axes.png</file>
+        <file>res/icons/desktop/back36t.png</file>
+        <file>res/icons/desktop/bottom36t.png</file>
+        <file>res/icons/desktop/Fitall.png</file>
+        <file>res/icons/desktop/folder.png</file>
+        <file>res/icons/desktop/folder_b.png</file>
+        <file>res/icons/desktop/front36t.png</file>
+        <file>res/icons/desktop/gear.png</file>
+        <file>res/icons/desktop/group.png</file>
+        <file>res/icons/desktop/hline.png</file>
+        <file>res/icons/desktop/icon.png</file>
+        <file>res/icons/desktop/instance.png</file>
+        <file>res/icons/desktop/Iso.png</file>
+        <file>res/icons/desktop/left36t.png</file>
+        <file>res/icons/desktop/lod.png</file>
+        <file>res/icons/desktop/Move.png</file>
+        <file>res/icons/desktop/rangelod.png</file>
+        <file>res/icons/desktop/resetview36t.png</file>
+        <file>res/icons/desktop/right36t.png</file>
+        <file>res/icons/desktop/Rotate.png</file>
+        <file>res/icons/desktop/screenshot.png</file>
+        <file>res/icons/desktop/shape.png</file>
+        <file>res/icons/desktop/shapelod.png</file>
+        <file>res/icons/desktop/top36t.png</file>
+        <file>res/icons/desktop/Zoom.png</file>
+    </qresource>
+</RCC>

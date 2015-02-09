@@ -1,0 +1,109 @@
+// JT format reading and visualization tools
+// Copyright (C) 2013-2015 OPEN CASCADE SAS
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, version 2 of the License, or any later
+// version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+// 
+// Copy of the GNU General Public License is in LICENSE.txt and  
+// on <http://www.gnu.org/licenses/>.
+
+template<class T, int N>
+BVH_ObjectSet<T, N>::BVH_ObjectSet()
+{
+  //
+}
+
+// =======================================================================
+// function : ~BVH_ObjectSet
+// purpose  :
+// =======================================================================
+template<class T, int N>
+BVH_ObjectSet<T, N>::~BVH_ObjectSet()
+{
+  //
+}
+
+// =======================================================================
+// function : Clears all geometric objects
+// purpose  :
+// =======================================================================
+template<class T, int N>
+void BVH_ObjectSet<T, N>::Clear()
+{
+  for (Standard_Integer anObjectIdx = 0; anObjectIdx < myObjects.Size(); ++anObjectIdx)
+  {
+    myObjects.ChangeValue (anObjectIdx).Nullify();
+  }
+  myObjects.Clear();
+}
+
+// =======================================================================
+// function : Objects
+// purpose  :
+// =======================================================================
+template<class T, int N>
+typename BVH_ObjectSet<T, N>::BVH_ObjectList& BVH_ObjectSet<T, N>::Objects()
+{
+  return myObjects;
+}
+
+// =======================================================================
+// function : Objects
+// purpose  :
+// =======================================================================
+template<class T, int N>
+const typename BVH_ObjectSet<T, N>::BVH_ObjectList& BVH_ObjectSet<T, N>::Objects() const
+{
+  return myObjects;
+}
+
+// =======================================================================
+// function : Size
+// purpose  :
+// =======================================================================
+template<class T, int N>
+Standard_Integer BVH_ObjectSet<T, N>::Size() const
+{
+  return myObjects.Size();
+}
+
+// =======================================================================
+// function : Box
+// purpose  :
+// =======================================================================
+template<class T, int N>
+BVH_Box<T, N> BVH_ObjectSet<T, N>::Box (const Standard_Integer theIndex) const
+{
+  return myObjects.Value (theIndex)->Box();
+}
+
+// =======================================================================
+// function : Center
+// purpose  :
+// =======================================================================
+template<class T, int N>
+T BVH_ObjectSet<T, N>::Center (const Standard_Integer theIndex,
+                               const Standard_Integer theAxis) const
+{
+  // Note: general implementation, not optimal
+  return BVH::CenterAxis<T, N>::Center (myObjects.Value (theIndex)->Box(), theAxis);
+}
+
+// =======================================================================
+// function : Swap
+// purpose  :
+// =======================================================================
+template<class T, int N>
+void BVH_ObjectSet<T, N>::Swap (const Standard_Integer theIndex1,
+                                const Standard_Integer theIndex2)
+{
+  std::swap (myObjects.ChangeValue (theIndex1),
+             myObjects.ChangeValue (theIndex2));
+}
