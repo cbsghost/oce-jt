@@ -2,7 +2,7 @@
 #
 # The script requires paths to 3rdparties and modules
 #
-#  FindOCCT.cmake / OCCT_ROOT_DIR
+#  FindOCE.cmake / OCE_ROOT_DIR
 #  FindTBB.cmake  / TBB_ROOT_DIR
 #  FindZLIB.cmake / ZLIB_ROOT_DIR
 #  FindQt5Widgets.cmake / QT_ROOT_DIR
@@ -52,7 +52,7 @@ endif()
 # Look for required dependencies
 # =============================================================================
 
-find_package(OCCT REQUIRED)
+find_package(OCE REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Eigen3 3.2.0 REQUIRED)
 find_package(TBB REQUIRED)
@@ -84,7 +84,7 @@ include_directories (
   ${CMAKE_CURRENT_SOURCE_DIR}/src/JTData
   ${CMAKE_CURRENT_SOURCE_DIR}/src/JTGui
   ${CMAKE_CURRENT_SOURCE_DIR}/src/JTVis
-  ${OCCT_INCLUDE_DIRS}
+  ${OCE_INCLUDE_DIRS}
   ${ZLIB_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
   ${TKJT_INCLUDE_DIRS}
@@ -135,7 +135,7 @@ add_executable (JTAssistant ${ProjectSources} ${ProjectHeaders} ${UISrcs} ${Reso
 
 add_dependencies (JTAssistant TKJT)
 
-target_link_libraries_config_aware (JTAssistant OCCT)
+target_link_libraries_config_aware (JTAssistant OCE)
 target_link_libraries_config_aware (JTAssistant TBB)
 target_link_libraries_config_aware (JTAssistant OPENGL)
 target_link_libraries_config_aware (JTAssistant ZLIB)
@@ -158,11 +158,11 @@ endif (WIN32)
 install (TARGETS JTAssistant RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}")
 
 if(WIN32)
-  install_shared_libraries (OCCT_DLLS DESTINATION "${CMAKE_INSTALL_PREFIX}")
+  install_shared_libraries (OCE_DLLS DESTINATION "${CMAKE_INSTALL_PREFIX}")
   install_shared_libraries (ZLIB_DLL  DESTINATION "${CMAKE_INSTALL_PREFIX}")
   install_shared_libraries (TBB_DLLS  DESTINATION "${CMAKE_INSTALL_PREFIX}")
 else()
-  install_shared_libraries (OCCT_LIBRARIES DESTINATION "${CMAKE_INSTALL_PREFIX}")
+  install_shared_libraries (OCE_LIBRARIES DESTINATION "${CMAKE_INSTALL_PREFIX}")
   install_shared_libraries (ZLIB_LIBRARIES DESTINATION "${CMAKE_INSTALL_PREFIX}")
   install_shared_libraries (TBB_LIBRARIES  DESTINATION "${CMAKE_INSTALL_PREFIX}")
 endif()

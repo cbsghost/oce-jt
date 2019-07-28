@@ -8,7 +8,7 @@
 #
 #  The script requires paths to 3rdparties and modules
 #
-#   FindOCCT.cmake / OCCT_ROOT_DIR
+#   FindOCE.cmake / OCE_ROOT_DIR
 #   FindTBB.cmake  / TBB_ROOT_DIR
 #   FindZLIB.cmake / ZLIB_ROOT_DIR
 
@@ -121,7 +121,7 @@ else()
   # Look for required dependencies
   # =============================================================================
 
-  find_package (OCCT REQUIRED)
+  find_package (OCE REQUIRED)
   find_package (TBB REQUIRED)
   find_package (ZLIB REQUIRED)
 
@@ -144,7 +144,7 @@ else()
   set (TKJT_PACKAGES)
 
   include_directories(
-    ${OCCT_INCLUDE_DIRS}
+    ${OCE_INCLUDE_DIRS}
     ${TBB_INCLUDE_DIRS}
     ${ZLIB_INCLUDE_DIRS}
   )
@@ -176,7 +176,7 @@ else()
 
   add_library (TKJT SHARED ${TKJT_HEADERS} ${TKJT_SOURCES})
 
-  target_link_libraries_config_aware (TKJT OCCT)
+  target_link_libraries_config_aware (TKJT OCE)
   target_link_libraries_config_aware (TKJT TBB)
   target_link_libraries_config_aware (TKJT ZLIB)
 
