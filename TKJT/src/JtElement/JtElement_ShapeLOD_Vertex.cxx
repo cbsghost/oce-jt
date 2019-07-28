@@ -320,6 +320,8 @@ Standard_Boolean JtElement_ShapeLOD_Vertex::readVertexBasedShapeCompressedRepDat
     aPimitiveListIndices = anEncodedPimitiveListIndices.DecodeI32 (JtDecode_Unpack_Stride1);
   }
   Jt_I32 aNbPrimitives = aPimitiveListIndices.Count() - 1;
+  if (aNbPrimitives <= 0)
+      return Standard_False;
   Jt_I32 aNbFaces = aPimitiveListIndices.Last() - aPimitiveListIndices.First() - aNbPrimitives * 2;
 
   // Read raw vertex data
