@@ -53,6 +53,7 @@ endif()
 # =============================================================================
 
 find_package(OCE REQUIRED)
+set(OCE_LIBRARIES "TKernel;TKMath")
 find_package(Qt5Widgets REQUIRED)
 find_package(Eigen3 3.2.0 REQUIRED)
 find_package(TBB REQUIRED)

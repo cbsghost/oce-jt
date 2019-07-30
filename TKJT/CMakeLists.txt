@@ -122,6 +122,7 @@ else()
   # =============================================================================
 
   find_package (OCE REQUIRED)
+  set(OCE_LIBRARIES "TKernel;TKMath")
   find_package (TBB REQUIRED)
   find_package (ZLIB REQUIRED)
 
